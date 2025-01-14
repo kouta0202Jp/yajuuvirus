@@ -33,10 +33,11 @@
     </audio>
     <script>
 let windowCount = 0; // 開いているウィンドウの数
+const maxWindows = 20; // 最大ウィンドウ数
 
-// ウィンドウを複製し、回転させる
-function openRotatingWindow(url, diameter, speed) {
-    if (windowCount >= 20) return; // 20個以上は開かない
+// ウィンドウを複製し、回転させ、動かす
+function openDynamicWindow(url, diameter, speed) {
+    if (windowCount >= maxWindows) return; // 20個以上は開かない
 
     let angle = 0; // 初期角度
     const centerX = window.screen.availWidth / 2;
@@ -48,18 +49,30 @@ function openRotatingWindow(url, diameter, speed) {
 
     windowCount++; // ウィンドウのカウントを増やす
 
-    setInterval(() => {
+    // ウィンドウの動作を定義
+    const moveWindow = setInterval(() => {
         // 円形の座標を計算
         const x = centerX + diameter * Math.cos(angle) - 200; // -200はウィンドウの中心補正
         const y = centerY + diameter * Math.sin(angle) - 200;
         angle += speed; // 角度を進める
-        win.moveTo(x, y); // ウィンドウを移動
+
+        // ランダムにウィンドウを動かす
+        const randomOffsetX = Math.random() * 100 - 50; // -50から50のランダムオフセット
+        const randomOffsetY = Math.random() * 100 - 50; // -50から50のランダムオフセット
+
+        win.moveTo(x + randomOffsetX, y + randomOffsetY); // ウィンドウを移動
     }, 20); // 20msごとに位置更新
+
+    // ウィンドウが閉じられた時の処理
+    win.onunload = () => {
+        windowCount--; // ウィンドウが閉じられたらカウントを減らす
+        clearInterval(moveWindow); // インターバルをクリア
+    };
 }
 
-// 1秒ごとに新しい回転するウィンドウを開く
+// 1秒ごとに新しい動くウィンドウを開く
 setInterval(() => {
-    openRotatingWindow(window.location.href, 300, 0.1); // 直径300px、速度0.1
+    openDynamicWindow(window.location.href, 300, 0.1); // 直径300px、速度0.1
 }, 1000);
 
     </script>
