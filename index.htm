@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You Are an Idiot</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        h1 {
+            font-size: 5rem;
+            animation: float 2s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(-20px); }
+            50% { transform: translateY(20px); }
+        }
+    </style>
+</head>
+<body>
+    <h1>test</h1>
+    <audio autoplay loop>
+        <source src="ムキムキダンス先輩.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        // 色を反転させる
+        setInterval(() => {
+            const body = document.body;
+            if (body.style.backgroundColor === "black") {
+                body.style.backgroundColor = "white";
+                body.style.color = "black";
+            } else {
+                body.style.backgroundColor = "black";
+                body.style.color = "white";
+            }
+        }, 1000); // 1秒ごとに色を反転
+
+        // ウィンドウをランダムな位置に複製
+        setInterval(() => {
+            const screenWidth = window.screen.availWidth;
+            const screenHeight = window.screen.availHeight;
+            const randomX = Math.floor(Math.random() * screenWidth);
+            const randomY = Math.floor(Math.random() * screenHeight);
+            const features = `width=400,height=400,left=${randomX},top=${randomY}`;
+            window.open(window.location.href, '_blank', features);
+        }, 3000); // 3秒ごとに新しいウィンドウを開く
+    </script>
+</body>
+</html>
