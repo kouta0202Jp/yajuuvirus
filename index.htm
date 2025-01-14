@@ -34,33 +34,35 @@
 </head>
 <body>
 <center>
- <h1><img src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg"><br>国宝野獣先輩</h1>
+ <h1><img src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg"><br>国宝田所浩二</h1>
  </center>
     <audio autoplay loop>
         <source src="ムキムキダンス先輩.mp3" type="audio/mpeg">
     </audio>
     <script>
-        // 色を反転させる
-        setInterval(() => {
-            const body = document.body;
-            if (body.style.backgroundColor === "black") {
-                body.style.backgroundColor = "white";
-                body.style.color = "black";
-            } else {
-                body.style.backgroundColor = "black";
-                body.style.color = "white";
-            }
-        }, 1000); // 1秒ごとに色を反転
+        // ウィンドウを複製し、回転させる
+        function openRotatingWindow(url, diameter, speed) {
+            let angle = 0; // 初期角度
+            const centerX = window.screen.availWidth / 2;
+            const centerY = window.screen.availHeight / 2;
 
-        // ウィンドウをランダムな位置に複製
+            const win = window.open(url, '_blank', `width=400,height=400`);
+
+            if (!win) return; // ウィンドウが開けない場合は終了
+
+            setInterval(() => {
+                // 円形の座標を計算
+                const x = centerX + diameter * Math.cos(angle) - 200; // -200はウィンドウの中心補正
+                const y = centerY + diameter * Math.sin(angle) - 200;
+                angle += speed; // 角度を進める
+                win.moveTo(x, y); // ウィンドウを移動
+            }, 20); // 20msごとに位置更新
+        }
+
+        // 1秒ごとに新しい回転するウィンドウを開く
         setInterval(() => {
-            const screenWidth = window.screen.availWidth;
-            const screenHeight = window.screen.availHeight;
-            const randomX = Math.floor(Math.random() * screenWidth);
-            const randomY = Math.floor(Math.random() * screenHeight);
-            const features = `width=400,height=400,left=${randomX},top=${randomY}`;
-            window.open(window.location.href, '_blank', features);
-        },1000); // 3秒ごとに新しいウィンドウを開く
+            openRotatingWindow(window.location.href, 300, 0.1); // 直径300px、速度0.1
+        }, 1000);
     </script>
 </body>
 </html>
