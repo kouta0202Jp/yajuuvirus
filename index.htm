@@ -17,18 +17,10 @@
             color: white;
             transition: background-color 0.5s, color 0.5s;
         }
-        h1 {
-            font-size: 5rem;
-            animation: float 2s infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(-20px); }
-            50% { transform: translateY(20px); }
-        }
     </style>
 </head>
 <body>
-    <h1>test</h1>
+    <h1><img src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg"><br>test</h1>
     <audio autoplay loop>
         <source src="ムキムキダンス先輩.mp3" type="audio/mpeg">
     </audio>
@@ -53,7 +45,7 @@
             const randomY = Math.floor(Math.random() * screenHeight);
             const features = `width=400,height=400,left=${randomX},top=${randomY}`;
             window.open(window.location.href, '_blank', features);
-        }, 3000); // 3秒ごとに新しいウィンドウを開く
+        },1000); // 3秒ごとに新しいウィンドウを開く
     </script>
 </body>
 </html>
