@@ -33,11 +33,11 @@
     </audio>
     <script>
 let windowCount = 0; // 開いているウィンドウの数
-const maxWindows = 20; // 最大ウィンドウ数
+const maxWindows = 5; // 最大ウィンドウ数
 
 // ウィンドウを複製し、回転させ、動かす
 function openDynamicWindow(url, diameter, speed) {
-    if (windowCount >= maxWindows) return; // 20個以上は開かない
+    if (windowCount >= maxWindows) return; // 最大数を超えたら終了
 
     let angle = 0; // 初期角度
     const centerX = window.screen.availWidth / 2;
@@ -56,24 +56,23 @@ function openDynamicWindow(url, diameter, speed) {
         const y = centerY + diameter * Math.sin(angle) - 200;
         angle += speed; // 角度を進める
 
-        // ランダムにウィンドウを動かす
-        const randomOffsetX = Math.random() * 100 - 50; // -50から50のランダムオフセット
-        const randomOffsetY = Math.random() * 100 - 50; // -50から50のランダムオフセット
+        // 大幅にランダムにウィンドウを動かす
+        const randomOffsetX = Math.random() * 1000 - 500; // -500から500のランダムオフセット
+        const randomOffsetY = Math.random() * 1000 - 500; // -500から500のランダムオフセット
 
-        win.moveTo(x + randomOffsetX, y + randomOffsetY); // ウィンドウを移動
-    }, 20); // 20msごとに位置更新
-
-    // ウィンドウが閉じられた時の処理
-    win.onunload = () => {
-        windowCount--; // ウィンドウが閉じられたらカウントを減らす
-        clearInterval(moveWindow); // インターバルをクリア
-    };
+        try {
+            win.moveTo(x + randomOffsetX, y + randomOffsetY); // ウィンドウを移動
+        } catch (e) {
+            clearInterval(moveWindow); // ウィンドウが閉じられていた場合の安全対策
+        }
+    }, 10); // 10msごとに位置更新
 }
 
-// 1秒ごとに新しい動くウィンドウを開く
+// 0.5秒ごとに新しい動くウィンドウを開く
 setInterval(() => {
-    openDynamicWindow(window.location.href, 300, 0.1); // 直径300px、速度0.1
-}, 1000);
+    openDynamicWindow(window.location.href, 300, 0.2); // 直径300px、速度0.2
+}, 500);
+
 
     </script>
 </body>
