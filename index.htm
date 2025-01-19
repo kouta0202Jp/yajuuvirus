@@ -33,11 +33,17 @@
     </audio>
     <script>
 let windowCount = 0; // 開いているウィンドウの数
-const maxWindows = 5; // 最大ウィンドウ数
+const maxWindows = 25; // 最大ウィンドウ数
 
 // ウィンドウを複製し、回転させ、動かす
 function openDynamicWindow(url, diameter, speed) {
     if (windowCount >= maxWindows) return; // 最大数を超えたら終了
+
+    // URLに"blank"が含まれている場合は終了
+    if (url.includes('blank')) {
+        console.log("URLに'blank'が含まれているため、ウィンドウを生成しません。");
+        return;
+    }
 
     let angle = 0; // 初期角度
     const centerX = window.screen.availWidth / 2;
@@ -51,14 +57,12 @@ function openDynamicWindow(url, diameter, speed) {
 
     // ウィンドウの動作を定義
     const moveWindow = setInterval(() => {
-        // 円形の座標を計算
         const x = centerX + diameter * Math.cos(angle) - 200; // -200はウィンドウの中心補正
         const y = centerY + diameter * Math.sin(angle) - 200;
         angle += speed; // 角度を進める
 
-        // 大幅にランダムにウィンドウを動かす
-        const randomOffsetX = Math.random() * 1000 - 500; // -500から500のランダムオフセット
-        const randomOffsetY = Math.random() * 1000 - 500; // -500から500のランダムオフセット
+        const randomOffsetX = Math.random() * 100 - 50; // ランダムオフセット
+        const randomOffsetY = Math.random() * 100 - 50;
 
         try {
             win.moveTo(x + randomOffsetX, y + randomOffsetY); // ウィンドウを移動
@@ -73,7 +77,36 @@ setInterval(() => {
     openDynamicWindow(window.location.href, 300, 0.2); // 直径300px、速度0.2
 }, 500);
 
-
     </script>
+<script>
+    // 新しいウィンドウを開く
+const newWindow = window.open("", "testWindow", "width=400,height=300");
+
+// ウィンドウの内容を設定
+if (newWindow) {
+    newWindow.document.write(`
+        <html>
+        <head>
+            <title>Press 't' to close</title>
+        </head>
+        <body>
+            <h1>Press 't' to close this window</h1>
+            <script>
+                // キーイベントをリッスン
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 't') {
+                        window.close();
+                    }
+                });
+            </script>
+        </body>
+        </html>
+    `);
+    newWindow.document.close();
+} else {
+    alert("新しいウィンドウを開けませんでした。ポップアップブロックが有効になっている可能性があります。");
+}
+
+</script>
 </body>
 </html>
