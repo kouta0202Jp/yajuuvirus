@@ -1,42 +1,78 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>You are an idiot!</title>
-    <script>
-        function openWindows() {
-            let width = 400, height = 300;
-
-            setInterval(() => {
-                let x = Math.floor(Math.random() * (window.screen.width - width));
-                let y = Math.floor(Math.random() * (window.screen.height - height));
-
-                let newWin = window.open("", "", `width=${width},height=${height},left=${x},top=${y}`);
-                if (newWin) {
-                    newWin.document.write(`
-                        <html>
-                        <head><title>国宝野獣</title></head>
-                        <body><center>
- <h1><img src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg"><br>国宝田所浩二</h1>
- </center>
-    <audio autoplay loop>
-        <source src="ムキムキダンス先輩.mp3" type="audio/mpeg">
-    </audio></center>
-                        </body>
-                        </html>
-                    `);
-                    newWin.document.close();
-                }
-            }, 1000); // 1秒ごとに開く
+    <title>目がチカチカする色反転</title>
+    <style>
+       body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
         }
-    </script>
+        img {
+            max-width: 500px;
+            height: 400px;
+            animation: color-invert 0.5s infinite; /* 0.5秒ごとに色反転 */
+        }
+        @keyframes color-invert {
+            0%, 100% { filter: invert(0); }
+            50% { filter: invert(1); }
+        }
+    </style>
 </head>
-<body onload="openWindows()"><center>
+<body>
+<center>
  <h1><img src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg"><br>国宝田所浩二</h1>
- </center>
-    <audio autoplay loop>
-        <source src="ムキムキダンス先輩.mp3" type="audio/mpeg">
-    </audio></center>
+</center>
+
+<audio autoplay loop>
+    <source src="ムキムキダンス先輩.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let windows = []; // 開いたウィンドウを保存
+const maxWindows = 25; // 最大ウィンドウ数
+
+function openDynamicWindow(url) {
+    if (windows.length >= maxWindows) return; 
+
+    const win = window.open(url, '_blank', `width=400,height=400`);
+    if (!win) return; 
+
+    windows.push(win); // ウィンドウをリストに追加
+
+    // ウィンドウをランダムに移動
+    const moveWindow = setInterval(() => {
+        if (win.closed) {
+            clearInterval(moveWindow);
+            windows = windows.filter(w => !w.closed);
+            return;
+        }
+        const x = Math.random() * window.screen.availWidth;
+        const y = Math.random() * window.screen.availHeight;
+        win.moveTo(x, y);
+    }, 50); // 50msごとにランダム移動
+}
+
+// 0.3秒ごとにウィンドウを開く
+setInterval(() => {
+    openDynamicWindow(window.location.href);
+}, 300);
+
+// 't'キーで全ウィンドウを閉じる
+document.addEventListener('keydown', function(event) {
+    if (event.key === 't') {
+        windows.forEach(win => {
+            if (!win.closed) win.close();
+        });
+        windows = [];
+    }
+});
+</script>
+
 </body>
 </html>
