@@ -40,7 +40,7 @@
         function handleMessage(event) {
             if (event.data === 'audioFinished') {
                 finishedCount++;
-                console.log(`通知 ${finishedCount}/${numWindows}`);
+                console.log(`通知 ${finishedCount}/${numWindows}`);  // 通知数をコンソールに表示
                 if (finishedCount >= numWindows) {
                     showImage();
                 }
