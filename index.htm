@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>目がチカチカする色反転</title>
+    <title>Google</title>
     <style>
        body {
             margin: 0;
@@ -22,28 +22,58 @@
             0%, 100% { filter: invert(0); }
             50% { filter: invert(1); }
         }
+        /* フルスクリーン用 */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .fullscreen img {
+            max-width: 100%;
+            max-height: 100%;
+            animation: none; /* 色反転なし */
+        }
     </style>
 </head>
 <body>
 <center>
- <h1><img src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg"><br>国宝田所浩二</h1>
+    <h1><img src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg"><br>国宝田所浩二</h1>
 </center>
 
-<audio autoplay loop>
+<audio id="mainAudio" autoplay>
     <source src="ムキムキダンス先輩.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 let windows = []; // 開いたウィンドウを保存
 const maxWindows = 25; // 最大ウィンドウ数
+let finishedWindows = 0; // 曲が終了したウィンドウの数
+let moveIntervals = []; // ウィンドウの移動インターバルを保存
 
 function openDynamicWindow(url) {
-    if (windows.length >= maxWindows) return; 
+    if (windows.length >= maxWindows) return;
 
     const win = window.open(url, '_blank', `width=400,height=400`);
-    if (!win) return; 
+    if (!win) return;
 
-    windows.push(win); // ウィンドウをリストに追加
+    windows.push(win);
+
+    // ウィンドウ内の音楽再生監視
+    win.onload = () => {
+        let audio = win.document.querySelector("audio");
+        if (audio) {
+            audio.onended = () => {
+                finishedWindows++;
+                checkAllFinished();
+            };
+        }
+    };
 
     // ウィンドウをランダムに移動
     const moveWindow = setInterval(() => {
@@ -55,7 +85,8 @@ function openDynamicWindow(url) {
         const x = Math.random() * window.screen.availWidth;
         const y = Math.random() * window.screen.availHeight;
         win.moveTo(x, y);
-    }, 50); // 50msごとにランダム移動
+    }, 50);
+    moveIntervals.push(moveWindow); // インターバル保存
 }
 
 // 0.3秒ごとにウィンドウを開く
@@ -72,6 +103,36 @@ document.addEventListener('keydown', function(event) {
         windows = [];
     }
 });
+
+// すべての曲が終了したかチェック
+function checkAllFinished() {
+    if (finishedWindows >= maxWindows) {
+        showFullScreenImage();
+        stopWindowMovement();
+    }
+}
+
+// フルスクリーン表示＆デデドン.mp3再生
+function showFullScreenImage() {
+    let fullscreenDiv = document.createElement("div");
+    fullscreenDiv.classList.add("fullscreen");
+
+    let img = document.createElement("img");
+    img.src = "https://img.atwiki.jp/cookie_kaisetu/attach/1247/723/YJSNPI.jpg"; // 新しい画像URL
+    fullscreenDiv.appendChild(img);
+
+    document.body.innerHTML = ""; // 既存のコンテンツ削除
+    document.body.appendChild(fullscreenDiv);
+
+    let dededonAudio = new Audio("../デデドン.mp3");
+    dededonAudio.play();
+}
+
+// ウィンドウの移動を止める
+function stopWindowMovement() {
+    moveIntervals.forEach(interval => clearInterval(interval));
+    moveIntervals = []; // インターバルをリセット
+}
 </script>
 
 </body>
