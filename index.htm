@@ -33,8 +33,7 @@
         function checkAudioEnd() {
             const allAudioEnded = windows.every(win => {
                 try {
-                    // ウィンドウの音声が終了しているか確認
-                    const audio = win.document.querySelector('audio');
+                    const audio = win.document.getElementById('music');
                     return audio ? audio.ended : true;
                 } catch (e) {
                     return true; // アクセスエラーを無視
@@ -50,7 +49,7 @@
 
         function showImage() {
             const img = new Image();
-            img.src = 'https://img.atwiki.jp/cookie_kaisetu/attach/1247/723/YJSNPI.jpg'; // 表示する画像のURL
+            img.src = 'デデドン.png'; // 表示する画像のURL
             img.style.position = 'fixed';
             img.style.top = '0';
             img.style.left = '0';
@@ -61,8 +60,42 @@
             document.body.innerHTML = '';
             document.body.appendChild(img);
 
-            const audio = new Audio('../デデドン.mp3');
+            // 全画面表示
+            if (img.requestFullscreen) {
+                img.requestFullscreen().catch(() => {
+                    // 自動で全画面できなかった場合の処理
+                    document.addEventListener('keydown', enterFullscreen);
+                });
+            } else {
+                // 他のブラウザの対応
+                const requestFullscreen = img.mozRequestFullScreen || img.webkitRequestFullscreen || img.msRequestFullscreen;
+                if (requestFullscreen) {
+                    requestFullscreen.call(img).catch(() => {
+                        // 自動で全画面できなかった場合の処理
+                        document.addEventListener('keydown', enterFullscreen);
+                    });
+                }
+            }
+
+            const audio = new Audio('デデドン.mp3'); // 再生する音声のURL
             audio.play();
+        }
+
+        function enterFullscreen() {
+            const img = document.querySelector('img'); // 画像要素を取得
+
+            if (img.requestFullscreen) {
+                img.requestFullscreen();
+            } else if (img.mozRequestFullScreen) { // Firefox
+                img.mozRequestFullScreen();
+            } else if (img.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                img.webkitRequestFullscreen();
+            } else if (img.msRequestFullscreen) { // IE/Edge
+                img.msRequestFullscreen();
+            }
+
+            // イベントリスナーを削除
+            document.removeEventListener('keydown', enterFullscreen);
         }
 
         window.onload = function() {
@@ -72,35 +105,6 @@
     </script>
 </head>
 <body>
-        <style>
-        #mainImage {
-            transition: transform 0.5s ease;
-        }
-    </style>
-        <center>
-        <h1>
-            <img id="mainImage" src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg" alt="国宝田所浩二"><br>
-            国宝田所浩二
-        </h1>
-    </center>
-
-    <!-- 自動再生の音楽 -->
-    <audio id="music" autoplay>
-        <source src="ムキムキダンス先輩.mp3" type="audio/mp3">
-        お使いのブラウザはaudioタグに対応していません。
-    </audio>
-
-    <script>
-        let isFlipped = false;
-        setInterval(() => {
-            const image = document.getElementById('mainImage');
-            if (isFlipped) {
-                image.style.transform = 'rotateY(0deg)';
-            } else {
-                image.style.transform = 'rotateY(180deg)';
-            }
-            isFlipped = !isFlipped;
-        }, 1000); // 1秒ごとに反転
-    </script>
+    <h1>ランダムな位置にウィンドウが生成され、音声を確認します</h1>
 </body>
 </html>
