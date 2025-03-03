@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google</title>
+    <title>フルスクリーン表示</title>
     <style>
-       body {
+        body {
             margin: 0;
             height: 100vh;
             display: flex;
@@ -16,11 +16,7 @@
         img {
             max-width: 500px;
             height: 400px;
-            animation: color-invert 0.5s infinite; /* 0.5秒ごとに色反転 */
-        }
-        @keyframes color-invert {
-            0%, 100% { filter: invert(0); }
-            50% { filter: invert(1); }
+            cursor: pointer; /* クリック可能にする */
         }
         /* フルスクリーン用 */
         .fullscreen {
@@ -34,16 +30,14 @@
             justify-content: center;
             align-items: center;
         }
-        .fullscreen img {
-            max-width: 100%;
-            max-height: 100%;
-            animation: none; /* 色反転なし */
-        }
     </style>
 </head>
 <body>
 <center>
-    <h1><img src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg"><br>国宝田所浩二</h1>
+    <h1>
+        <img id="mainImage" src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg" alt="国宝田所浩二"><br>
+        国宝田所浩二
+    </h1>
 </center>
 
 <audio id="mainAudio" autoplay>
@@ -55,6 +49,41 @@ let windows = []; // 開いたウィンドウを保存
 const maxWindows = 2; // 最大ウィンドウ数
 let finishedWindows = 0; // 曲が終了したウィンドウの数
 let moveIntervals = []; // ウィンドウの移動インターバルを保存
+
+// フルスクリーン表示＆デデドン.mp3再生
+function showFullScreenImage() {
+    let fullscreenDiv = document.createElement("div");
+    fullscreenDiv.classList.add("fullscreen");
+
+    let img = document.createElement("img");
+    img.src = "https://img.atwiki.jp/cookie_kaisetu/attach/1247/723/YJSNPI.jpg"; // フルスクリーンで表示する画像
+    fullscreenDiv.appendChild(img);
+
+    document.body.innerHTML = ""; // 既存のコンテンツ削除
+    document.body.appendChild(fullscreenDiv);
+
+    // フルスクリーンを要求
+    const requestFullscreen = () => {
+        if (fullscreenDiv.requestFullscreen) {
+            fullscreenDiv.requestFullscreen();
+        } else if (fullscreenDiv.mozRequestFullScreen) { // Firefox用
+            fullscreenDiv.mozRequestFullScreen();
+        } else if (fullscreenDiv.webkitRequestFullscreen) { // Chrome, Safari用
+            fullscreenDiv.webkitRequestFullscreen();
+        } else if (fullscreenDiv.msRequestFullscreen) { // IE用
+            fullscreenDiv.msRequestFullscreen();
+        }
+    };
+
+    // フルスクリーンを要求
+    requestFullscreen();
+
+    // オーディオの再生
+    let dededonAudio = new Audio("デデドン.mp3"); // デデドンの音声ファイル
+    dededonAudio.play().catch(error => {
+        console.error("オーディオの再生に失敗しました:", error);
+    });
+}
 
 function openDynamicWindow(url) {
     // 閉じたウィンドウを削除
@@ -95,18 +124,11 @@ function openDynamicWindow(url) {
 
 // 0.3秒ごとにウィンドウを開く
 setInterval(() => {
-    openDynamicWindow(window.location.href);
-}, 300);
-
-// 't'キーで全ウィンドウを閉じる
-document.addEventListener('keydown', function(event) {
-    if (event.key === 't') {
-        windows.forEach(win => {
-            if (!win.closed) win.close();
-        });
-        windows = [];
+    // ウィンドウが2つ未満の場合にのみ新しいウィンドウを開く
+    if (windows.length < maxWindows) {
+        openDynamicWindow(window.location.href);
     }
-});
+}, 300);
 
 // すべての曲が終了したかチェック
 function checkAllFinished() {
@@ -114,33 +136,6 @@ function checkAllFinished() {
         showFullScreenImage();
         stopWindowMovement();
     }
-}
-
-// フルスクリーン表示＆デデドン.mp3再生
-function showFullScreenImage() {
-    let fullscreenDiv = document.createElement("div");
-    fullscreenDiv.classList.add("fullscreen");
-
-    let img = document.createElement("img");
-    img.src = "https://img.atwiki.jp/cookie_kaisetu/attach/1247/723/YJSNPI.jpg"; // 新しい画像URL
-    fullscreenDiv.appendChild(img);
-
-    document.body.innerHTML = ""; // 既存のコンテンツ削除
-    document.body.appendChild(fullscreenDiv);
-
-    // フルスクリーンを要求
-    if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen();
-    } else if (document.documentElement.mozRequestFullScreen) { // Firefox用
-        document.documentElement.mozRequestFullScreen();
-    } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari用
-        document.documentElement.webkitRequestFullscreen();
-    } else if (document.documentElement.msRequestFullscreen) { // IE用
-        document.documentElement.msRequestFullscreen();
-    }
-
-    let dededonAudio = new Audio("../デデドン.mp3");
-    dededonAudio.play();
 }
 
 // ウィンドウの移動を止める
