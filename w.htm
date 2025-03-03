@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反転画像と音楽</title>
+    <style>
+        #mainImage {
+            transition: transform 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>
+            <img id="mainImage" src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg" alt="国宝田所浩二"><br>
+            国宝田所浩二
+        </h1>
+    </center>
+
+    <!-- 自動再生の音楽 -->
+    <audio id="music" autoplay>
+        <source src="ムキムキダンス先輩.mp3" type="audio/mp3">
+        お使いのブラウザはaudioタグに対応していません。
+    </audio>
+
+    <script>
+        let isFlipped = false;
+        setInterval(() => {
+            const image = document.getElementById('mainImage');
+            if (isFlipped) {
+                image.style.transform = 'rotateY(0deg)';
+            } else {
+                image.style.transform = 'rotateY(180deg)';
+            }
+            isFlipped = !isFlipped;
+        }, 1000); // 1秒ごとに反転
+    </script>
+</body>
+</html>
