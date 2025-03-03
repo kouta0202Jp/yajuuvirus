@@ -3,147 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>フルスクリーン表示</title>
+    <title>ウィンドウ動作</title>
     <style>
+        /* 初期のスタイル設定 */
         body {
             margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: white;
+            overflow: hidden;
         }
-        img {
-            max-width: 500px;
-            height: 400px;
-            cursor: pointer; /* クリック可能にする */
+        #mainImage {
+            width: 100%;
+            height: auto;
         }
-        /* フルスクリーン用 */
-        .fullscreen {
+        #mainAudio {
+            display: none; /* 音楽の表示を非表示に */
+        }
+        /* 全画面の画像表示 */
+        #fullScreenImage {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
+            width: 100%;
             height: 100vh;
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            object-fit: cover;
+            display: block; /* 最初に表示 */
         }
     </style>
 </head>
 <body>
-<center>
-    <h1>
-        <img id="mainImage" src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg" alt="国宝田所浩二"><br>
-        国宝田所浩二
-    </h1>
-</center>
+    <center>
+        <h1>
+            <img id="mainImage" src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg" alt="国宝田所浩二"><br>
+            国宝田所浩二
+        </h1>
+    </center>
 
-<audio id="mainAudio" autoplay>
-    <source src="ムキムキダンス先輩.mp3" type="audio/mpeg">
-</audio>
+    <audio id="mainAudio" autoplay>
+        <source src="ムキムキダンス先輩.mp3" type="audio/mpeg">
+    </audio>
 
-<script>
-let windows = []; // 開いたウィンドウを保存
-const maxWindows = 2; // 最大ウィンドウ数
-let finishedWindows = 0; // 曲が終了したウィンドウの数
-let moveIntervals = []; // ウィンドウの移動インターバルを保存
+    <img id="fullScreenImage" src="https://img.atwiki.jp/cookie_kaisetu/attach/1247/723/YJSNPI.jpg" alt="全画面画像">
 
-// フルスクリーン表示＆デデドン.mp3再生
-function showFullScreenImage() {
-    let fullscreenDiv = document.createElement("div");
-    fullscreenDiv.classList.add("fullscreen");
-
-    let img = document.createElement("img");
-    img.src = "https://img.atwiki.jp/cookie_kaisetu/attach/1247/723/YJSNPI.jpg"; // フルスクリーンで表示する画像
-    fullscreenDiv.appendChild(img);
-
-    document.body.innerHTML = ""; // 既存のコンテンツ削除
-    document.body.appendChild(fullscreenDiv);
-
-    // フルスクリーンを要求
-    const requestFullscreen = () => {
-        if (fullscreenDiv.requestFullscreen) {
-            fullscreenDiv.requestFullscreen();
-        } else if (fullscreenDiv.mozRequestFullScreen) { // Firefox用
-            fullscreenDiv.mozRequestFullScreen();
-        } else if (fullscreenDiv.webkitRequestFullscreen) { // Chrome, Safari用
-            fullscreenDiv.webkitRequestFullscreen();
-        } else if (fullscreenDiv.msRequestFullscreen) { // IE用
-            fullscreenDiv.msRequestFullscreen();
+    <script>
+        // ウィンドウを動かす関数
+        function createMovingWindows() {
+            let windowsCount = 5;
+            for (let i = 0; i < windowsCount; i++) {
+                let windowDiv = document.createElement('div');
+                windowDiv.style.position = 'absolute';
+                windowDiv.style.width = '200px';
+                windowDiv.style.height = '200px';
+                windowDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                windowDiv.style.top = Math.random() * window.innerHeight + 'px';
+                windowDiv.style.left = Math.random() * window.innerWidth + 'px';
+                windowDiv.style.animation = `moveWindow ${Math.random() * 5 + 3}s infinite`;
+                document.body.appendChild(windowDiv);
+            }
         }
-    };
 
-    // フルスクリーンを要求
-    requestFullscreen();
+        // CSS アニメーション
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes moveWindow {
+                0% { transform: translate(0, 0); }
+                25% { transform: translate(100px, 100px); }
+                50% { transform: translate(-100px, -100px); }
+                75% { transform: translate(50px, 50px); }
+                100% { transform: translate(0, 0); }
+            }
+        `;
+        document.head.appendChild(style);
 
-    // オーディオの再生
-    let dededonAudio = new Audio("デデドン.mp3"); // デデドンの音声ファイル
-    dededonAudio.play().catch(error => {
-        console.error("オーディオの再生に失敗しました:", error);
-    });
-}
+        // 音楽終了後に動作停止
+        document.getElementById('mainAudio').onended = function() {
+            // 動いているウィンドウを削除
+            let windows = document.querySelectorAll('div');
+            windows.forEach(window => window.remove());
 
-function openDynamicWindow(url) {
-    // 閉じたウィンドウを削除
-    windows = windows.filter(w => !w.closed);
+            // 画像を全画面で表示
+            document.getElementById('fullScreenImage').style.display = 'block';
 
-    // ウィンドウが2つ以上開いている場合は新しいウィンドウを開かない
-    if (windows.length >= maxWindows) return;
+            // 元の画像を隠す
+            document.getElementById('mainImage').style.display = 'none';
+        };
 
-    const win = window.open(url, '_blank', `width=400,height=400`);
-    if (!win) return;
-
-    windows.push(win);
-
-    // ウィンドウ内の音楽再生監視
-    win.onload = () => {
-        let audio = win.document.querySelector("audio");
-        if (audio) {
-            audio.onended = () => {
-                finishedWindows++;
-                checkAllFinished();
-            };
-        }
-    };
-
-    // ウィンドウをランダムに移動
-    const moveWindow = setInterval(() => {
-        if (win.closed) {
-            clearInterval(moveWindow);
-            windows = windows.filter(w => !w.closed);
-            return;
-        }
-        const x = Math.random() * window.screen.availWidth;
-        const y = Math.random() * window.screen.availHeight;
-        win.moveTo(x, y);
-    }, 50);
-    moveIntervals.push(moveWindow); // インターバル保存
-}
-
-// 0.3秒ごとにウィンドウを開く
-setInterval(() => {
-    // ウィンドウが2つ未満の場合にのみ新しいウィンドウを開く
-    if (windows.length < maxWindows) {
-        openDynamicWindow(window.location.href);
-    }
-}, 300);
-
-// すべての曲が終了したかチェック
-function checkAllFinished() {
-    if (finishedWindows >= maxWindows) {
-        showFullScreenImage();
-        stopWindowMovement();
-    }
-}
-
-// ウィンドウの移動を止める
-function stopWindowMovement() {
-    moveIntervals.forEach(interval => clearInterval(interval));
-    moveIntervals = []; // インターバルをリセット
-}
-</script>
-
+        // ページ読み込み時にウィンドウを作成
+        window.onload = function() {
+            createMovingWindows();
+            // 最初から全画面画像を表示
+            document.getElementById('fullScreenImage').style.display = 'block';
+        };
+    </script>
 </body>
 </html>
