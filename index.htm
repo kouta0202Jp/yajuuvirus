@@ -6,6 +6,7 @@
     <title>ランダムウィンドウ生成</title>
     <script>
         const numWindows = 5; // ウィンドウの数を5に制限
+        let windows = [];
 
         function getRandomPosition() {
             const x = Math.floor(Math.random() * (window.screen.width - 400));
@@ -14,13 +15,12 @@
         }
 
         function createAndMoveWindows() {
-            const windows = [];
-
             for (let i = 0; i < numWindows; i++) {
-                const newWin = window.open(window.location.href, '_blank', 'width=400,height=300');
+                const newWin = window.open('/w.htm', '_blank', 'width=400,height=300');
+                windows.push(newWin);
+
                 const pos = getRandomPosition();
                 newWin.moveTo(pos.x, pos.y);
-                windows.push(newWin);
 
                 // 0.5秒ごとにウィンドウを移動させる
                 setInterval(() => {
@@ -30,12 +30,77 @@
             }
         }
 
+        function checkAudioEnd() {
+            const allAudioEnded = windows.every(win => {
+                try {
+                    // ウィンドウの音声が終了しているか確認
+                    const audio = win.document.querySelector('audio');
+                    return audio ? audio.ended : true;
+                } catch (e) {
+                    return true; // アクセスエラーを無視
+                }
+            });
+
+            if (allAudioEnded) {
+                showImage();
+            } else {
+                setTimeout(checkAudioEnd, 1000); // 1秒後に再チェック
+            }
+        }
+
+        function showImage() {
+            const img = new Image();
+            img.src = 'https://img.atwiki.jp/cookie_kaisetu/attach/1247/723/YJSNPI.jpg'; // 表示する画像のURL
+            img.style.position = 'fixed';
+            img.style.top = '0';
+            img.style.left = '0';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.zIndex = '9999'; // 画像を最前面に表示
+
+            document.body.innerHTML = '';
+            document.body.appendChild(img);
+
+            const audio = new Audio('デデドン.mp3');
+            audio.play();
+        }
+
         window.onload = function() {
             createAndMoveWindows();
+            checkAudioEnd(); // 音声の終了をチェック
         };
     </script>
 </head>
 <body>
-    <h1>ランダムな位置にウィンドウが生成され、移動します</h1>
+        <style>
+        #mainImage {
+            transition: transform 0.5s ease;
+        }
+    </style>
+        <center>
+        <h1>
+            <img id="mainImage" src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg" alt="国宝田所浩二"><br>
+            国宝田所浩二
+        </h1>
+    </center>
+
+    <!-- 自動再生の音楽 -->
+    <audio id="music" autoplay loop>
+        <source src="ムキムキダンス先輩.mp3" type="audio/mp3">
+        お使いのブラウザはaudioタグに対応していません。
+    </audio>
+
+    <script>
+        let isFlipped = false;
+        setInterval(() => {
+            const image = document.getElementById('mainImage');
+            if (isFlipped) {
+                image.style.transform = 'rotateY(0deg)';
+            } else {
+                image.style.transform = 'rotateY(180deg)';
+            }
+            isFlipped = !isFlipped;
+        }, 1000); // 1秒ごとに反転
+    </script>
 </body>
 </html>
