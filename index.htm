@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ランダムウィンドウ生成</title>
     <script>
-        const numWindows = 5; // 開くウィンドウの数
+        const numWindows = 15;
         let windows = [];
-        let finishedCount = 0; // 終了カウント
+        let finishedCount = 0;
 
         function getRandomPosition() {
-            const x = Math.floor(Math.random() * (window.screen.width - 400));
-            const y = Math.floor(Math.random() * (window.screen.height - 300));
-            return { x, y };
+            return {
+                x: Math.floor(Math.random() * (window.screen.width - 400)),
+                y: Math.floor(Math.random() * (window.screen.height - 300))
+            };
         }
 
         function createAndMoveWindows() {
@@ -23,28 +24,28 @@
                     newWin.onload = () => {
                         const pos = getRandomPosition();
                         newWin.moveTo(pos.x, pos.y);
-
-                        // 0.5秒ごとにランダム移動
                         setInterval(() => {
                             const newPos = getRandomPosition();
                             newWin.moveTo(newPos.x, newPos.y);
                         }, 500);
-                    }
+                    };
                 }
             }
         }
 
-        function childAudioFinished() {
-            finishedCount++;
-            console.log(`通知 ${finishedCount}/${numWindows}`);
-            if (finishedCount >= numWindows) {
-                showImage();
+        function handleMessage(event) {
+            if (event.data === 'audioFinished') {
+                finishedCount++;
+                console.log(`通知 ${finishedCount}/${numWindows}`);
+                if (finishedCount >= numWindows) {
+                    showImage();
+                }
             }
         }
 
         function showImage() {
             const img = new Image();
-            img.src = 'デデドン.png';
+            img.src = 'https://img.atwiki.jp/cookie_kaisetu/attach/1247/723/YJSNPI.jpg';
             img.style.position = 'fixed';
             img.style.top = '0';
             img.style.left = '0';
@@ -55,18 +56,8 @@
             document.body.innerHTML = '';
             document.body.appendChild(img);
 
-            // 全画面表示
-            if (img.requestFullscreen) {
-                img.requestFullscreen().catch(() => {
-                    document.addEventListener('keydown', enterFullscreen);
-                });
-            } else {
-                const requestFullscreen = img.mozRequestFullScreen || img.webkitRequestFullscreen || img.msRequestFullscreen;
-                if (requestFullscreen) {
-                    requestFullscreen.call(img).catch(() => {
-                        document.addEventListener('keydown', enterFullscreen);
-                    });
-                }
+            if (!enterFullscreen()) {
+                document.addEventListener('keydown', enterFullscreen);
             }
 
             const audio = new Audio('デデドン.mp3');
@@ -76,35 +67,30 @@
         function enterFullscreen() {
             const img = document.querySelector('img');
             if (img.requestFullscreen) {
-                img.requestFullscreen();
+                img.requestFullscreen().catch(() => {
+                    console.log("自動全画面失敗、キーを押すと全画面になります");
+                });
             } else if (img.mozRequestFullScreen) {
                 img.mozRequestFullScreen();
             } else if (img.webkitRequestFullscreen) {
                 img.webkitRequestFullscreen();
             } else if (img.msRequestFullscreen) {
                 img.msRequestFullscreen();
+            } else {
+                return false;
             }
 
             document.removeEventListener('keydown', enterFullscreen);
+            return true;
         }
 
         window.onload = function() {
             createAndMoveWindows();
+            window.addEventListener('message', handleMessage, false);
         };
     </script>
 </head>
 <body>
-        <center>
-        <h1>
-            <img id="mainImage" src="https://pbs.twimg.com/media/FFNCY1faQAQjA2X.jpg" alt="国宝田所浩二"><br>
-            国宝田所浩二
-        </h1>
-    </center>
-
-    <!-- 自動再生の音楽 -->
-    <audio id="music" autoplay>
-        <source src="ムキムキダンス先輩.mp3" type="audio/mp3">
-        お使いのブラウザはaudioタグに対応していません。
-    </audio>
+    <h1>ランダムな位置にウィンドウが生成され、音声を確認します</h1>
 </body>
 </html>
