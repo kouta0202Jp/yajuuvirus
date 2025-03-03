@@ -57,6 +57,9 @@ let finishedWindows = 0; // 曲が終了したウィンドウの数
 let moveIntervals = []; // ウィンドウの移動インターバルを保存
 
 function openDynamicWindow(url) {
+    // 閉じたウィンドウを削除
+    windows = windows.filter(w => !w.closed);
+
     if (windows.length >= maxWindows) return;
 
     const win = window.open(url, '_blank', `width=400,height=400`);
