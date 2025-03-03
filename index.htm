@@ -18,18 +18,22 @@
 
         function createAndMoveWindows() {
             for (let i = 0; i < numWindows; i++) {
-                const newWin = window.open('/w.htm', '_blank', 'width=400,height=300');
-                if (newWin) {
-                    windows.push(newWin);
-                    newWin.onload = () => {
-                        const pos = getRandomPosition();
-                        newWin.moveTo(pos.x, pos.y);
-                        setInterval(() => {
-                            const newPos = getRandomPosition();
-                            newWin.moveTo(newPos.x, newPos.y);
-                        }, 500);
-                    };
-                }
+                setTimeout(() => {
+                    const newWin = window.open('/w.htm', '_blank', 'width=400,height=300');
+                    if (newWin) {
+                        windows.push(newWin);
+                        newWin.onload = () => {
+                            const pos = getRandomPosition();
+                            newWin.moveTo(pos.x, pos.y);
+                            setInterval(() => {
+                                if (!newWin.closed) {
+                                    const newPos = getRandomPosition();
+                                    newWin.moveTo(newPos.x, newPos.y);
+                                }
+                            }, 500);
+                        };
+                    }
+                }, i * 200);
             }
         }
 
@@ -56,32 +60,15 @@
             document.body.innerHTML = '';
             document.body.appendChild(img);
 
-            if (!enterFullscreen()) {
-                document.addEventListener('keydown', enterFullscreen);
-            }
-
+            // 音声を自動で再生
             const audio = new Audio('デデドン.mp3');
-            audio.play();
-        }
+            console.log("音声ファイルのパス:", audio.src);
 
-        function enterFullscreen() {
-            const img = document.querySelector('img');
-            if (img.requestFullscreen) {
-                img.requestFullscreen().catch(() => {
-                    console.log("自動全画面失敗、キーを押すと全画面になります");
-                });
-            } else if (img.mozRequestFullScreen) {
-                img.mozRequestFullScreen();
-            } else if (img.webkitRequestFullscreen) {
-                img.webkitRequestFullscreen();
-            } else if (img.msRequestFullscreen) {
-                img.msRequestFullscreen();
-            } else {
-                return false;
-            }
-
-            document.removeEventListener('keydown', enterFullscreen);
-            return true;
+            // 音声再生を試みる
+            audio.play().catch((err) => {
+                console.error("自動再生エラー:", err);
+                alert("音声の自動再生に失敗しました。ブラウザの設定を確認してください。");
+            });
         }
 
         window.onload = function() {
