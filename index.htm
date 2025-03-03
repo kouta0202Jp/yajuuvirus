@@ -60,6 +60,7 @@ function openDynamicWindow(url) {
     // 閉じたウィンドウを削除
     windows = windows.filter(w => !w.closed);
 
+    // ウィンドウが2つ以上開いている場合は新しいウィンドウを開かない
     if (windows.length >= maxWindows) return;
 
     const win = window.open(url, '_blank', `width=400,height=400`);
@@ -126,6 +127,17 @@ function showFullScreenImage() {
 
     document.body.innerHTML = ""; // 既存のコンテンツ削除
     document.body.appendChild(fullscreenDiv);
+
+    // フルスクリーンを要求
+    if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) { // Firefox用
+        document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari用
+        document.documentElement.webkitRequestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) { // IE用
+        document.documentElement.msRequestFullscreen();
+    }
 
     let dededonAudio = new Audio("../デデドン.mp3");
     dededonAudio.play();
