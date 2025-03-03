@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ランダムウィンドウ生成</title>
+    <title>114514!!114514!!</title>
     <script>
         const numWindows = 15;
         let windows = [];
         let finishedCount = 0;
+        let stopRequested = false;
 
         function getRandomPosition() {
             return {
@@ -38,11 +39,13 @@
         }
 
         function handleMessage(event) {
-            if (event.data === 'audioFinished') {
+            if (event.data === 'audioFinished' && !stopRequested) {
                 finishedCount++;
-                console.log(`通知 ${finishedCount}/${numWindows}`);  // 通知数をコンソールに表示
-                if (finishedCount >= numWindows) {
-                    showImage();
+                console.log(`通知 ${finishedCount}/${numWindows}`);
+                if (finishedCount >= 1) {
+                    stopRequested = true;  // 通知が来た時点で処理をストップ
+                    console.log("1個でも通知が来たため処理をストップします。");
+                    setTimeout(showImage, 5000);  // 5秒後に全画面
                 }
             }
         }
@@ -60,15 +63,35 @@
             document.body.innerHTML = '';
             document.body.appendChild(img);
 
-            // 音声を自動で再生
-            const audio = new Audio('デデドン.mp3');
-            console.log("音声ファイルのパス:", audio.src);
+            // 全画面表示
+            if (!enterFullscreen()) {
+                document.addEventListener('keydown', enterFullscreen);
+            }
 
-            // 音声再生を試みる
+            const audio = new Audio('デデドン.mp3');
             audio.play().catch((err) => {
-                console.error("自動再生エラー:", err);
-                alert("音声の自動再生に失敗しました。ブラウザの設定を確認してください。");
+                console.error("音声再生エラー:", err);
             });
+        }
+
+        function enterFullscreen() {
+            const img = document.querySelector('img');
+            if (img.requestFullscreen) {
+                img.requestFullscreen().catch(() => {
+                    console.log("自動全画面失敗、キーを押すと全画面になります");
+                });
+            } else if (img.mozRequestFullScreen) {
+                img.mozRequestFullScreen();
+            } else if (img.webkitRequestFullscreen) {
+                img.webkitRequestFullscreen();
+            } else if (img.msRequestFullscreen) {
+                img.msRequestFullscreen();
+            } else {
+                return false;
+            }
+
+            document.removeEventListener('keydown', enterFullscreen);
+            return true;
         }
 
         window.onload = function() {
@@ -78,6 +101,7 @@
     </script>
 </head>
 <body>
-    <h1>ランダムな位置にウィンドウが生成され、音声を確認します</h1>
+    <h1>test/h1>
 </body>
 </html>
+    
