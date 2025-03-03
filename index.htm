@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ランダムウィンドウ生成</title>
     <script>
-        const numWindows = 5; // ウィンドウの数を5に制限
+        const numWindows = 5; // 開くウィンドウの数
         let windows = [];
+        let finishedCount = 0; // 終了カウント
 
         function getRandomPosition() {
             const x = Math.floor(Math.random() * (window.screen.width - 400));
@@ -17,45 +18,39 @@
         function createAndMoveWindows() {
             for (let i = 0; i < numWindows; i++) {
                 const newWin = window.open('/w.htm', '_blank', 'width=400,height=300');
-                windows.push(newWin);
+                if (newWin) {
+                    windows.push(newWin);
+                    newWin.onload = () => {
+                        const pos = getRandomPosition();
+                        newWin.moveTo(pos.x, pos.y);
 
-                const pos = getRandomPosition();
-                newWin.moveTo(pos.x, pos.y);
-
-                // 0.5秒ごとにウィンドウを移動させる
-                setInterval(() => {
-                    const newPos = getRandomPosition();
-                    newWin.moveTo(newPos.x, newPos.y);
-                }, 500);
+                        // 0.5秒ごとにランダム移動
+                        setInterval(() => {
+                            const newPos = getRandomPosition();
+                            newWin.moveTo(newPos.x, newPos.y);
+                        }, 500);
+                    }
+                }
             }
         }
 
-        function checkAudioEnd() {
-            const allAudioEnded = windows.every(win => {
-                try {
-                    const audio = win.document.getElementById('music');
-                    return audio ? audio.ended : true;
-                } catch (e) {
-                    return true; // アクセスエラーを無視
-                }
-            });
-
-            if (allAudioEnded) {
+        function childAudioFinished() {
+            finishedCount++;
+            console.log(`通知 ${finishedCount}/${numWindows}`);
+            if (finishedCount >= numWindows) {
                 showImage();
-            } else {
-                setTimeout(checkAudioEnd, 1000); // 1秒後に再チェック
             }
         }
 
         function showImage() {
             const img = new Image();
-            img.src = 'デデドン.png'; // 表示する画像のURL
+            img.src = 'デデドン.png';
             img.style.position = 'fixed';
             img.style.top = '0';
             img.style.left = '0';
             img.style.width = '100%';
             img.style.height = '100%';
-            img.style.zIndex = '9999'; // 画像を最前面に表示
+            img.style.zIndex = '9999';
 
             document.body.innerHTML = '';
             document.body.appendChild(img);
@@ -63,48 +58,42 @@
             // 全画面表示
             if (img.requestFullscreen) {
                 img.requestFullscreen().catch(() => {
-                    // 自動で全画面できなかった場合の処理
                     document.addEventListener('keydown', enterFullscreen);
                 });
             } else {
-                // 他のブラウザの対応
                 const requestFullscreen = img.mozRequestFullScreen || img.webkitRequestFullscreen || img.msRequestFullscreen;
                 if (requestFullscreen) {
                     requestFullscreen.call(img).catch(() => {
-                        // 自動で全画面できなかった場合の処理
                         document.addEventListener('keydown', enterFullscreen);
                     });
                 }
             }
 
-            const audio = new Audio('デデドン.mp3'); // 再生する音声のURL
+            const audio = new Audio('デデドン.mp3');
             audio.play();
         }
 
         function enterFullscreen() {
-            const img = document.querySelector('img'); // 画像要素を取得
-
+            const img = document.querySelector('img');
             if (img.requestFullscreen) {
                 img.requestFullscreen();
-            } else if (img.mozRequestFullScreen) { // Firefox
+            } else if (img.mozRequestFullScreen) {
                 img.mozRequestFullScreen();
-            } else if (img.webkitRequestFullscreen) { // Chrome, Safari and Opera
+            } else if (img.webkitRequestFullscreen) {
                 img.webkitRequestFullscreen();
-            } else if (img.msRequestFullscreen) { // IE/Edge
+            } else if (img.msRequestFullscreen) {
                 img.msRequestFullscreen();
             }
 
-            // イベントリスナーを削除
             document.removeEventListener('keydown', enterFullscreen);
         }
 
         window.onload = function() {
             createAndMoveWindows();
-            checkAudioEnd(); // 音声の終了をチェック
         };
     </script>
 </head>
 <body>
-    <h1>ランダムな位置にウィンドウが生成され、音声を確認します</h1>
+    <h1>ランダムな位置にウィンドウが生成され、音声が終了すると全画面表示</h1>
 </body>
 </html>
