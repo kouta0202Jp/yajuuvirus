@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>反転画像と音楽</title>
+    <title>色反転画像と音楽</title>
     <style>
         #mainImage {
-            transition: transform 0.5s ease;
+            transition: filter 0.5s ease;
         }
     </style>
 </head>
@@ -25,16 +25,19 @@
     </audio>
 
     <script>
-        let isFlipped = false;
+        let isInverted = false;
         setInterval(() => {
             const image = document.getElementById('mainImage');
-            if (isFlipped) {
-                image.style.transform = 'rotateY(0deg)';
-            } else {
-                image.style.transform = 'rotateY(180deg)';
+            image.style.filter = isInverted ? 'invert(0)' : 'invert(1)';
+            isInverted = !isInverted;
+        }, 1000); // 1秒ごとに色反転
+
+        // 音楽が終わったら親ウィンドウに通知
+        document.getElementById('music').addEventListener('ended', function() {
+            if (window.opener && !window.opener.closed) {
+                window.opener.childAudioFinished(); // 親ページに通知
             }
-            isFlipped = !isFlipped;
-        }, 1000); // 1秒ごとに反転
+        });
     </script>
 </body>
 </html>
