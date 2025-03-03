@@ -3,52 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>音楽と画像表示</title>
+    <title>ランダムウィンドウ生成</title>
     <script>
         const numWindows = 15;
-        let musicEnded = false;
 
-        function openWindows() {
+        function getRandomPosition() {
+            const x = Math.floor(Math.random() * (window.screen.width - 400));
+            const y = Math.floor(Math.random() * (window.screen.height - 300));
+            return { x, y };
+        }
+
+        function createAndMoveWindows() {
+            const windows = [];
+
             for (let i = 0; i < numWindows; i++) {
-                const newWin = window.open('about:blank', '_blank', 'width=400,height=300');
-                newWin.document.write('<h1>ウィンドウが開きました</h1>');
+                const newWin = window.open(window.location.href, '_blank', 'width=400,height=300');
+                const pos = getRandomPosition();
+                newWin.moveTo(pos.x, pos.y);
+                windows.push(newWin);
+
+                // 0.5秒ごとにウィンドウを移動させる
+                setInterval(() => {
+                    const newPos = getRandomPosition();
+                    newWin.moveTo(newPos.x, newPos.y);
+                }, 500);
             }
         }
 
-        function playMusic() {
-            const audio = new Audio('../ムキムキダンス先輩.mp3');
-            audio.play();
-
-            audio.onended = function() {
-                musicEnded = true;
-                showImage();
-            };
-        }
-
-        function showImage() {
-            const img = new Image();
-            img.src = 'your-image-url.jpg'; // 表示する画像のURLに置き換えてください
-            img.style.position = 'fixed';
-            img.style.top = '0';
-            img.style.left = '0';
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.zIndex = '9999'; // 画像を最前面に表示
-
-            document.body.innerHTML = '';
-            document.body.appendChild(img);
-
-            const audio = new Audio('デデドン.mp3');
-            audio.play();
-        }
-
         window.onload = function() {
-            openWindows();
-            playMusic();
+            createAndMoveWindows();
         };
     </script>
 </head>
 <body>
-    <h1>ウィンドウが開き、音楽が再生されます</h1>
+    <h1>ランダムな位置にウィンドウが生成され、移動します</h1>
 </body>
 </html>
