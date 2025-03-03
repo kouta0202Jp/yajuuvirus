@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114514!!114514!!</title>
+    <title>114514!!!!</title>
     <script>
         const numWindows = 15;
         let windows = [];
@@ -43,9 +43,9 @@
                 finishedCount++;
                 console.log(`通知 ${finishedCount}/${numWindows}`);
                 if (finishedCount >= 1) {
-                    stopRequested = true;  // 通知が来た時点で処理をストップ
+                    stopRequested = true;
                     console.log("1個でも通知が来たため処理をストップします。");
-                    setTimeout(showImage, 5000);  // 5秒後に全画面
+                    setTimeout(showImage, 5000);
                 }
             }
         }
@@ -63,7 +63,6 @@
             document.body.innerHTML = '';
             document.body.appendChild(img);
 
-            // 全画面表示
             if (!enterFullscreen()) {
                 document.addEventListener('keydown', enterFullscreen);
             }
@@ -101,7 +100,6 @@
     </script>
 </head>
 <body>
-    <h1>test/h1>
+    <h1>ランダムな位置にウィンドウが生成され、音声を確認します</h1>
 </body>
 </html>
-    
