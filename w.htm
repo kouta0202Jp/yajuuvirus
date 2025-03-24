@@ -21,7 +21,7 @@
     </center>
 
     <!-- 自動再生の音楽 -->
-    <audio id="music" autoplay>
+    <audio id="music" autoplay loop>
         <source src="https://yajuu.f5.si/ムキムキダンス先輩.mp3" type="audio/mp3">
         お使いのブラウザはaudioタグに対応していません。
     </audio>
@@ -33,13 +33,35 @@
             image.style.filter = isInverted ? 'invert(0)' : 'invert(1)';
             isInverted = !isInverted;
         }, 1000); // 1秒ごとに色反転
+        });
+    </script>
+        <script>
+        // 全画面モードに入る関数
+        function enterFullscreen() {
+            const docElement = document.documentElement; // <html>要素をターゲットに
+            if (docElement.requestFullscreen) {
+                docElement.requestFullscreen();
+            } else if (docElement.mozRequestFullScreen) {
+                docElement.mozRequestFullScreen(); // Firefox
+            } else if (docElement.webkitRequestFullscreen) {
+                docElement.webkitRequestFullscreen(); // Safari, Chrome, Opera
+            } else if (docElement.msRequestFullscreen) {
+                docElement.msRequestFullscreen(); // IE/Edge
+            }
+        }
 
-        // 音楽が終わったら親ウィンドウに通知
-        document.getElementById('music').addEventListener('ended', function() {
-            if (window.opener && !window.opener.closed) {
-                window.opener.childAudioFinished(); // 親ページに通知
+        // キー入力イベントのリッスン
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'F12') { // F12以外のキーで全画面
+                enterFullscreen();
+            } else {
+                console.log("F12キーが押されました。全画面モードに入りません。");
             }
         });
+
+        // クリックやタップイベントでも全画面
+        document.addEventListener('click', () => enterFullscreen());
+        document.addEventListener('touchstart', () => enterFullscreen()); // スマホやタブレット対応
     </script>
 </body>
 </html>
