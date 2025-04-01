@@ -15,8 +15,16 @@ function getRandomPosition() {
     };
 }
 
+function getRandomSize() {
+    return {
+        width: Math.floor(Math.random() * 600 + 200),
+        height: Math.floor(Math.random() * 400 + 200)
+    };
+}
+
 function createWindow() {
-    const newWin = window.open('/w.htm', '_blank', 'width=400,height=300');
+    const size = getRandomSize();
+    const newWin = window.open('/w.htm', '_blank', `width=${size.width},height=${size.height}`);
     if (newWin) {
         windows.push(newWin);
         newWin.onload = () => {
@@ -31,7 +39,7 @@ function moveWindowRandomly(win) {
             const pos = getRandomPosition();
             win.moveTo(pos.x, pos.y);
         }
-    }, 500);
+    }, 300);
 }
 
 function createAndMonitorWindows() {
@@ -40,15 +48,14 @@ function createAndMonitorWindows() {
     }
 
     setInterval(() => {
-        // 閉じられたウィンドウをリストから削除
         windows = windows.filter(win => {
             if (win.closed) {
-                createWindow(); // 閉じたら新しいウィンドウを開く
+                createWindow();
                 return false;
             }
             return true;
         });
-    }, 1000); // 1秒ごとにチェック
+    }, 1000);
 }
 
 window.onload = function () {
@@ -57,46 +64,24 @@ window.onload = function () {
 </script>
 </head>
 <body>
-        <style>
+    <style>
         * {
             margin: 0;
             padding: 0;
         }
-
         html, body, iframe {
             width: 100%;
             height: 100%;
             border: none;
+            text-align: center;
+            font-size: 50px;
+            font-weight: bold;
+            position: absolute;
         }
     </style>
     <iframe src="/w.htm"></iframe>
-        <script>
-        // 全画面モードに入る関数
-        function enterFullscreen() {
-            const docElement = document.documentElement; // <html>要素をターゲットに
-            if (docElement.requestFullscreen) {
-                docElement.requestFullscreen();
-            } else if (docElement.mozRequestFullScreen) {
-                docElement.mozRequestFullScreen(); // Firefox
-            } else if (docElement.webkitRequestFullscreen) {
-                docElement.webkitRequestFullscreen(); // Safari, Chrome, Opera
-            } else if (docElement.msRequestFullscreen) {
-                docElement.msRequestFullscreen(); // IE/Edge
-            }
-        }
-
-        // キー入力イベントのリッスン
-        document.addEventListener('keydown', (event) => {
-            if (event.key !== 'F12') { // F12以外のキーで全画面
-                enterFullscreen();
-            } else {
-                console.log("F12キーが押されました。全画面モードに入りません。");
-            }
-        });
-
-        // クリックやタップイベントでも全画面
-        document.addEventListener('click', () => enterFullscreen());
-        document.addEventListener('touchstart', () => enterFullscreen()); // スマホやタブレット対応
-    </script>
+    <audio autoplay loop>
+        <source src="/デデドン.mp3" type="audio/mpeg">
+    </audio>
 </body>
 </html>
