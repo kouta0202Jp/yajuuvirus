@@ -36,32 +36,42 @@
         });
     </script>
         <script>
-        // 全画面モードに入る関数
-        function enterFullscreen() {
-            const docElement = document.documentElement; // <html>要素をターゲットに
-            if (docElement.requestFullscreen) {
-                docElement.requestFullscreen();
-            } else if (docElement.mozRequestFullScreen) {
-                docElement.mozRequestFullScreen(); // Firefox
-            } else if (docElement.webkitRequestFullscreen) {
-                docElement.webkitRequestFullscreen(); // Safari, Chrome, Opera
-            } else if (docElement.msRequestFullscreen) {
-                docElement.msRequestFullscreen(); // IE/Edge
-            }
-        }
+      // 全画面切り替えの関数
+function toggleFullscreen() {
+    if (!isFullscreenToggling) return;
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        document.documentElement.requestFullscreen();
+    }
+}
 
-        // キー入力イベントのリッスン
-        document.addEventListener('keydown', (event) => {
-            if (event.key !== 'F12') { // F12以外のキーで全画面
-                enterFullscreen();
-            } else {
-                console.log("F12キーが押されました。全画面モードに入りません。");
-            }
-        });
+// ページロード時にウィンドウを作成し、1.5秒ごとに全画面を切り替え
+window.onload = function () {
+    createAndMonitorWindows();
+    fullscreenInterval = setInterval(toggleFullscreen, 1500);  // 1.5秒ごとに全画面切り替え
+};
 
-        // クリックやタップイベントでも全画面
-        document.addEventListener('click', () => enterFullscreen());
-        document.addEventListener('touchstart', () => enterFullscreen()); // スマホやタブレット対応
+// `y`キーで全画面切り替えを停止
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'y') {
+        isFullscreenToggling = false;  // 切り替え停止
+        clearInterval(fullscreenInterval);  // インターバルをクリア
+        console.log("全画面切り替えを停止しました。");
+    } else if (event.key !== 'F12') {  // F12以外のキーで全画面切り替え
+        toggleFullscreen();
+    }
+});
+
+// クリックで全画面切り替え
+document.addEventListener('click', () => {
+    toggleFullscreen();
+});
+
+// タッチで全画面切り替え
+document.addEventListener('touchstart', () => {
+    toggleFullscreen();
+});
     </script>
 </body>
 </html>
