@@ -7,6 +7,8 @@
 <script>
 const numWindows = 25;
 let windows = [];
+let fullscreenInterval;
+let isFullscreenToggling = true;
 
 function getRandomPosition() {
     return {
@@ -58,9 +60,27 @@ function createAndMonitorWindows() {
     }, 1000);
 }
 
+function toggleFullscreen() {
+    if (!isFullscreenToggling) return;
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        document.documentElement.requestFullscreen();
+    }
+}
+
 window.onload = function () {
     createAndMonitorWindows();
+    fullscreenInterval = setInterval(toggleFullscreen, 1500);
 };
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'y') {
+        isFullscreenToggling = false;
+        clearInterval(fullscreenInterval);
+        console.log("全画面切り替えを停止しました。");
+    }
+});
 </script>
 </head>
 <body>
